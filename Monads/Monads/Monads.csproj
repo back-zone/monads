@@ -11,6 +11,10 @@
         <PackageTags>backzone monads, back.zone monads</PackageTags>
         <Company>Back.Zone</Company>
         <AssemblyVersion>0.0.1</AssemblyVersion>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>Backzone Monads</Title>
+        <Authors>Murat Yavuzkaplan</Authors>
+        <PackageId>Back.Zone.Monads</PackageId>
     </PropertyGroup>
 
 </Project>
