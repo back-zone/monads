@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Back.Zone.Monads</RootNamespace>
+        <PackageVersion>0.0.1</PackageVersion>
+        <PackageProjectUrl>https://back.zone</PackageProjectUrl>
+        <PackageLicenseUrl>https://back.zone/oss/license.html</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/back-zone/monads</RepositoryUrl>
+        <PackageTags>backzone monads, back.zone monads</PackageTags>
+        <Company>Back.Zone</Company>
+        <AssemblyVersion>0.0.1</AssemblyVersion>
+    </PropertyGroup>
+
+</Project>
