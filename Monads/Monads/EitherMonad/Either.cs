@@ -35,6 +35,8 @@ namespace Back.Zone.Monads.EitherMonad
             return new Either<TL, TR>(right);
         }
 
+        public Either<TAL, TBR> Map<TAL, TBR>(Func<TL, TAL> left, Func<TR, TBR> right) => _isLeft ? left(_left!) : right(_right!);
+        
         public TB Fold<TB>(Func<TL, TB> left, Func<TR, TB> right) => _isLeft ? left(_left!) : right(_right!);
 
         public async Task<TB> FoldAsync<TB>(Func<TL, Task<TB>> left, Func<TR, Task<TB>> right) =>
