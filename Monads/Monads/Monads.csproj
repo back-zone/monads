@@ -15,6 +15,7 @@
         <Title>Backzone Monads</Title>
         <Authors>Murat Yavuzkaplan</Authors>
         <PackageId>Back.Zone.Monads</PackageId>
+        <AssemblyName>Back.Zone.Monads</AssemblyName>
     </PropertyGroup>
 
 </Project>
