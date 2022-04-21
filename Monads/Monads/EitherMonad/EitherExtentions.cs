@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Back.Zone.Monads.OptionMonad;
 
 namespace Back.Zone.Monads.EitherMonad;
 
@@ -8,7 +9,7 @@ public static class EitherExtentions
     public static TUnifiedType Fold<TUnifiedType>(
         this Either<TUnifiedType, TUnifiedType> either
     ) => either.Fold(l => l, r => r);
-    
+
     public static async Task<Either<TLeftType, TRightTypeB>> MapAsync
         <TLeftType, TRightTypeA, TRightTypeB>
         (
@@ -66,12 +67,27 @@ public static class EitherExtentions
         var either = await eitherTask;
         return either.IsLeft ? await left(either.Left!) : right(either.Right!);
     }
-    
+
     public static async Task<TUnifiedType> FoldAsync<TUnifiedType>(
         this Task<Either<TUnifiedType, TUnifiedType>> either
     )
     {
         var result = await either;
         return result.Fold(l => l, r => r);
+    }
+
+    public static Option<TRightType> ToOption<TLeftType, TRightType>(
+        this Either<TLeftType, TRightType> either
+    )
+    {
+        return either.Fold<Option<TRightType>>(_ => new None<TRightType>(), leftSide => new Some<TRightType>(leftSide));
+    }
+
+    public static async Task<Option<TRightType>> ToOptionAsync<TLeftType, TRightType>(
+        this Task<Either<TLeftType, TRightType>> either
+    )
+    {
+        var result = await either;
+        return result.Fold<Option<TRightType>>(_ => new None<TRightType>(), leftSide => new Some<TRightType>(leftSide));
     }
 }

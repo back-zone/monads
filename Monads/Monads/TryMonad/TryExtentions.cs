@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using Back.Zone.Monads.EitherMonad;
+using Back.Zone.Monads.OptionMonad;
 
 namespace Back.Zone.Monads.TryMonad;
 
@@ -88,5 +90,47 @@ public static class Try
     {
         var result = await tryTask;
         return await result.FoldAsync(exceptionFunc, successFunc);
+    }
+
+    public static Either<Exception, TRightType> ToEither<TRightType>(
+        this Try<TRightType> tryT
+    )
+    {
+        return
+            tryT
+                .Fold(
+                    exception => new Either<Exception, TRightType>(exception),
+                    right => new Either<Exception, TRightType>(right)
+                );
+    }
+
+    public static async Task<Either<Exception, TRightType>> ToEitherAsync<TRightType>(
+        this Task<Try<TRightType>> tryTask
+    )
+    {
+        var result = await tryTask;
+
+        return result.ToEither();
+    }
+
+    public static Option<TRightType> ToOption<TRightType>(
+        this Try<TRightType> tryT
+    )
+    {
+        return
+            tryT
+                .Fold<Option<TRightType>>(
+                    _ => new None<TRightType>(),
+                    right => new Some<TRightType>(right)
+                );
+    }
+
+    public static async Task<Option<TRightType>> ToOptionAsync<TRightType>(
+        this Task<Try<TRightType>> tryTask
+    )
+    {
+        var result = await tryTask;
+
+        return result.ToOption();
     }
 }
