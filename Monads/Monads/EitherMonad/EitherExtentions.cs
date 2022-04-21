@@ -5,6 +5,10 @@ namespace Back.Zone.Monads.EitherMonad;
 
 public static class EitherExtentions
 {
+    public static TUnifiedType Fold<TUnifiedType>(
+        this Either<TUnifiedType, TUnifiedType> either
+    ) => either.Fold(l => l, r => r);
+    
     public static async Task<Either<TLeftType, TRightTypeB>> MapAsync
         <TLeftType, TRightTypeA, TRightTypeB>
         (
@@ -61,5 +65,13 @@ public static class EitherExtentions
     {
         var either = await eitherTask;
         return either.IsLeft ? await left(either.Left!) : right(either.Right!);
+    }
+    
+    public static async Task<TUnifiedType> FoldAsync<TUnifiedType>(
+        this Task<Either<TUnifiedType, TUnifiedType>> either
+    )
+    {
+        var result = await either;
+        return result.Fold(l => l, r => r);
     }
 }
