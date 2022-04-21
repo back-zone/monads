@@ -43,11 +43,11 @@ public readonly struct Either<TLeftType, TRightTypeA>
         Func<TRightTypeA, Task<TRightTypeB>> right
     ) => IsLeft ? Left! : await right(Right!);
 
-    public Either<TLeftType, TRightTypeB> FlatMap<TRightTypeB>(
+    public Either<TLeftType, TRightTypeB> Flatmap<TRightTypeB>(
         Func<TRightTypeA, Either<TLeftType, TRightTypeB>> right
     ) => IsLeft ? Left! : right(Right!);
 
-    public async Task<Either<TLeftType, TRightTypeB>> FlatMapAsync<TRightTypeB>(
+    public async Task<Either<TLeftType, TRightTypeB>> FlatmapAsync<TRightTypeB>(
         Func<TRightTypeA, Task<Either<TLeftType, TRightTypeB>>> right
     ) => IsLeft ? Left! : await right(Right!);
 

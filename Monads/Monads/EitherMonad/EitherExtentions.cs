@@ -21,7 +21,7 @@ public static class EitherExtentions
         return await either.MapAsync(right);
     }
 
-    public static async Task<Either<TLeftType, TRightTypeB>> FlatMapAsync
+    public static async Task<Either<TLeftType, TRightTypeB>> FlatmapAsync
         <TLeftType, TRightTypeA, TRightTypeB>
         (
             this Task<Either<TLeftType, TRightTypeA>> eitherTask,
@@ -29,7 +29,7 @@ public static class EitherExtentions
         )
     {
         var either = await eitherTask;
-        return await either.FlatMapAsync(right);
+        return await either.FlatmapAsync(right);
     }
 
     public static async Task<TUnifiedType> FoldAsync

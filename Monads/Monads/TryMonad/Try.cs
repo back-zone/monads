@@ -15,7 +15,7 @@ public abstract class Try<TTryTypeA>
 
     public abstract Task<Try<TTryTypeB>> MapAsync<TTryTypeB>(Func<TTryTypeA, Task<TTryTypeB>> func);
 
-    public abstract Try<TTryTypeB> FlatMap<TTryTypeB>(Func<TTryTypeA, Try<TTryTypeB>> func);
+    public abstract Try<TTryTypeB> Flatmap<TTryTypeB>(Func<TTryTypeA, Try<TTryTypeB>> func);
 
     public abstract Task<Try<TTryTypeB>> FlatmapAsync<TTryTypeB>(Func<TTryTypeA, Task<Try<TTryTypeB>>> func);
 

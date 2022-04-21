@@ -26,7 +26,7 @@ public sealed class Success<TTryTypeA> : Try<TTryTypeA>
         Func<TTryTypeA, Task<TTryTypeB>> func
     ) => await Try.FromAsync(func(_value));
 
-    public override Try<TTryTypeB> FlatMap<TTryTypeB>(
+    public override Try<TTryTypeB> Flatmap<TTryTypeB>(
         Func<TTryTypeA, Try<TTryTypeB>> func
     ) => func(_value);
 

@@ -26,7 +26,7 @@ public sealed class Failure<TTryTypeA> : Try<TTryTypeA>
         Func<TTryTypeA, Task<TTryTypeB>> func
     ) => throw _exception;
 
-    public override Try<TTryTypeB> FlatMap<TTryTypeB>(
+    public override Try<TTryTypeB> Flatmap<TTryTypeB>(
         Func<TTryTypeA, Try<TTryTypeB>> func
     ) => throw _exception;
 

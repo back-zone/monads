@@ -121,7 +121,9 @@ public static class Try
             tryT
                 .Fold<Option<TRightType>>(
                     _ => new None<TRightType>(),
-                    right => new Some<TRightType>(right)
+                    right => right != null
+                        ? new Some<TRightType>(right)
+                        : new None<TRightType>()
                 );
     }
 
