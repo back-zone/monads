@@ -6,6 +6,9 @@ namespace Back.Zone.Monads.OptionMonad;
 
 public static class Option
 {
+    public static Option<TSomeTypeA> ToOption<TSomeTypeA>(this TSomeTypeA value) =>
+        value == null ? new None<TSomeTypeA>() : new Some<TSomeTypeA>(value);
+    
     public static Option<TSomeTypeA> From<TSomeTypeA>(TSomeTypeA value) =>
         value is not null ? new Some<TSomeTypeA>(value) : new None<TSomeTypeA>();
 
@@ -45,7 +48,7 @@ public static class Option
         TSomeTypeB ifEmptyValue,
         Func<TSomeTypeA, TSomeTypeB> func
     ) => option.IsEmpty() ? ifEmptyValue : func(option.Get());
-
+    
     public static async Task<TSomeTypeB> FoldAsync<TSomeTypeA, TSomeTypeB>(
         this Task<Option<TSomeTypeA>> optionTask,
         TSomeTypeB ifEmptyValue,
@@ -65,4 +68,44 @@ public static class Option
         var option = await optionTask;
         return option.IsEmpty() ? ifEmpty() : await func(option.Get());
     }
+    
+    public static TUnifiedType Fold<TUnifiedType, TSomeTypeA>(
+        this Option<TSomeTypeA> option,
+        Func<TUnifiedType> none,
+        Func<TSomeTypeA, TUnifiedType> some) => option switch
+    {
+        None<TSomeTypeA> _ => none(),
+        Some<TSomeTypeA>(var value) => some(value),
+        _ => none()
+    };
+    
+    public static async Task<TUnifiedType> FoldAsync<TUnifiedType, T>(
+        this Task<Option<T>> option,
+        Func<TUnifiedType> none,
+        Func<T, Task<TUnifiedType>> some) => await option switch
+    {
+        None<T> _ => none(),
+        Some<T>(var value) => await some(value),
+        _ => none()
+    };
+
+    public static async Task<TUnifiedType> FoldAsync<TUnifiedType, T>(
+        this Task<Option<T>> option,
+        Func<Task<TUnifiedType>> none,
+        Func<T, TUnifiedType> some) => await option switch
+    {
+        None<T> _ => await none(),
+        Some<T>(var value) => some(value),
+        _ => await none()
+    };
+
+    public static async Task<TUnifiedType> FoldAsync<TUnifiedType, T>(
+        this Task<Option<T>> option,
+        Func<Task<TUnifiedType>> none,
+        Func<T, Task<TUnifiedType>> some) => await option switch
+    {
+        None<T> _ => await none(),
+        Some<T>(var value) => await some(value),
+        _ => await none()
+    };
 }

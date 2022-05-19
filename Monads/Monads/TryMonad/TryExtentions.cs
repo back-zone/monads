@@ -96,12 +96,21 @@ public static class Try
         this Try<TRightType> tryT
     )
     {
-        return
-            tryT
-                .Fold(
-                    exception => new Either<Exception, TRightType>(exception),
-                    right => new Either<Exception, TRightType>(right)
-                );
+        return tryT.Fold(
+            exception => new Either<Exception, TRightType>(exception),
+            right => new Either<Exception, TRightType>(right)
+        );
+    }
+
+    public static Either<TLeftType, TRightTypeA> ToEither<TLeftType, TRightType, TRightTypeA>(
+        this Try<TRightType> tryA,
+        Func<Exception, TLeftType> left,
+        Func<TRightType, TRightTypeA> right)
+    {
+        return tryA.Fold<Either<TLeftType, TRightTypeA>>(
+            exception => left(exception),
+            other => right(other)
+        );
     }
 
     public static async Task<Either<Exception, TRightType>> ToEitherAsync<TRightType>(
@@ -117,14 +126,10 @@ public static class Try
         this Try<TRightType> tryT
     )
     {
-        return
-            tryT
-                .Fold<Option<TRightType>>(
-                    _ => new None<TRightType>(),
-                    right => right != null
-                        ? new Some<TRightType>(right)
-                        : new None<TRightType>()
-                );
+        return tryT.Fold(
+            _ => new None<TRightType>(),
+            right => right.ToOption()
+        );
     }
 
     public static async Task<Option<TRightType>> ToOptionAsync<TRightType>(
