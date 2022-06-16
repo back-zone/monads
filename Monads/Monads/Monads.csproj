@@ -4,12 +4,12 @@
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Back.Zone.Monads</RootNamespace>
-        <PackageVersion>0.0.9.1</PackageVersion>
+        <PackageVersion>0.0.9.5</PackageVersion>
         <PackageProjectUrl>https://back.zone</PackageProjectUrl>
         <RepositoryUrl>https://github.com/back-zone/monads</RepositoryUrl>
         <PackageTags>backzone monads, back.zone monads</PackageTags>
         <Company>back.zone</Company>
-        <AssemblyVersion>0.0.9.1</AssemblyVersion>
+        <AssemblyVersion>0.0.9.5</AssemblyVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>Backzone Monads</Title>
         <Authors>Murat Yavuzkaplan</Authors>

@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Back.Zone.Monads.TryMonad;
+using Back.Zone.Monads.Validated;
 
 namespace Back.Zone.Monads.OptionMonad;
 
@@ -18,7 +19,7 @@ public static class Option
     public static Option<TSomeTypeB> Map<TSomeTypeA, TSomeTypeB>(
         this Option<TSomeTypeA> option,
         Func<TSomeTypeA, TSomeTypeB> func
-    ) => option.IsEmpty() ? new None<TSomeTypeB>() : new Some<TSomeTypeB>(func(option.Get()));
+    ) => option.Map(func);
 
     public static async Task<Option<TSomeTypeB>> MapAsync<TSomeTypeA, TSomeTypeB>(
         this Task<Option<TSomeTypeA>> optionTask,
@@ -26,13 +27,13 @@ public static class Option
     )
     {
         var option = await optionTask;
-        return option.IsEmpty() ? new None<TSomeTypeB>() : new Some<TSomeTypeB>(await func(option.Get()));
+        return await option.MapAsync(func);
     }
 
     public static Option<TSomeTypeB> Flatmap<TSomeTypeA, TSomeTypeB>(
         this Option<TSomeTypeA> option,
         Func<TSomeTypeA, Option<TSomeTypeB>> func
-    ) => option.IsEmpty() ? new None<TSomeTypeB>() : func(option.Get());
+    ) => option.Flatmap(func);
 
     public static async Task<Option<TSomeTypeB>> FlatmapAsync<TSomeTypeA, TSomeTypeB>(
         this Task<Option<TSomeTypeA>> optionTask,
@@ -40,7 +41,7 @@ public static class Option
     )
     {
         var option = await optionTask;
-        return option.IsEmpty() ? new None<TSomeTypeB>() : await func(option.Get());
+        return await option.FlatmapAsync(func);
     }
 
     public static TSomeTypeB Fold<TSomeTypeA, TSomeTypeB>(
@@ -74,7 +75,7 @@ public static class Option
         Func<TUnifiedType> none,
         Func<TSomeTypeA, TUnifiedType> some) => option switch
     {
-        None<TSomeTypeA> _ => none(),
+        None<TSomeTypeA> => none(),
         Some<TSomeTypeA>(var value) => some(value),
         _ => none()
     };
@@ -84,7 +85,7 @@ public static class Option
         Func<TUnifiedType> none,
         Func<T, Task<TUnifiedType>> some) => await option switch
     {
-        None<T> _ => none(),
+        None<T> => none(),
         Some<T>(var value) => await some(value),
         _ => none()
     };
@@ -94,7 +95,7 @@ public static class Option
         Func<Task<TUnifiedType>> none,
         Func<T, TUnifiedType> some) => await option switch
     {
-        None<T> _ => await none(),
+        None<T> => await none(),
         Some<T>(var value) => some(value),
         _ => await none()
     };
@@ -104,8 +105,21 @@ public static class Option
         Func<Task<TUnifiedType>> none,
         Func<T, Task<TUnifiedType>> some) => await option switch
     {
-        None<T> _ => await none(),
+        None<T> => await none(),
         Some<T>(var value) => await some(value),
         _ => await none()
     };
+
+    public static Validated<Exception, TASomeType> ToValidated<TASomeType>(
+        this Option<TASomeType> option)
+        => option switch
+        {
+            None<TASomeType> => new ValidatedFailure<Exception, TASomeType>(new Exception($"{nameof(option)} is empty!")),
+            Some<TASomeType>(var value) => new ValidatedSuccess<Exception, TASomeType>(value),
+            _ => new ValidatedFailure<Exception, TASomeType>(new Exception($"{nameof(option)} was malformed!"))
+        };
+
+    public static async Task<Validated<Exception, TASomeType>> ToValidatedAsync<TASomeType>(
+        this Task<Option<TASomeType>> optionTask
+    ) => (await optionTask).ToValidated();
 }

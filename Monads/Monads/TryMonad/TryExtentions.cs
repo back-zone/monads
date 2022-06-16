@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Back.Zone.Monads.EitherMonad;
 using Back.Zone.Monads.OptionMonad;
+using Back.Zone.Monads.Validated;
 
 namespace Back.Zone.Monads.TryMonad;
 
@@ -131,7 +132,7 @@ public static class Try
             right => right.ToOption()
         );
     }
-
+    
     public static async Task<Option<TRightType>> ToOptionAsync<TRightType>(
         this Task<Try<TRightType>> tryTask
     )
@@ -140,4 +141,15 @@ public static class Try
 
         return result.ToOption();
     }
+    
+    public static Validated<Exception, TRightType> ToValidated<TRightType>(
+        this Try<TRightType> tryT
+    ) => tryT.Fold<Validated<Exception, TRightType>>(
+        exception => new ValidatedFailure<Exception, TRightType>(exception),
+        right => new ValidatedSuccess<Exception, TRightType>(right)
+    );
+    
+    public static async Task<Validated<Exception, TRightType>> ToValidatedAsync<TRightType>(
+        this Task<Try<TRightType>> tryTask
+    ) => (await tryTask).ToValidated();
 }
