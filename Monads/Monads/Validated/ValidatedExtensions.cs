@@ -92,4 +92,31 @@ public static class ValidatedExtensions
     public static async Task<Either<TAFailureType, TASuccessType>> ToEitherAsync<TAFailureType, TASuccessType>(
         this Task<Validated<TAFailureType, TASuccessType>> validatedTask
     ) => (await validatedTask).ToEither();
+    
+    public static Validated<TEB, TA> MapError<TE, TEB, TA>(
+        this Validated<TE, TA> validated,
+        Func<TE, TEB> errorMapper
+    ) => validated
+        .Fold<Validated<TEB, TA>>(te => errorMapper(te), ta => ta);
+    
+    public static async Task<Validated<TEB, TA>> MapErrorAsync<TE, TEB, TA>(
+        this Task<Validated<TE, TA>> validatedTask,
+        Func<TE, TEB> errorMapper
+    ) => (await validatedTask).MapError(errorMapper);
+
+    public static async Task<Validated<TE, TB>> MapAsync<TE, TA, TB>(
+        this Task<Validated<TE, TA>> validatedTask,
+        Func<TA, TB> map
+    ) => (await validatedTask).Map(map);
+
+    public static async Task<Validated<TE, TB>> FlatmapAsync<TE, TA, TB>(
+        this Task<Validated<TE, TA>> validatedTask,
+        Func<TA, Validated<TE, TB>> map
+    ) => (await validatedTask).Flatmap(map);
+
+    public static async Task<TA> FoldAsync<TA>(
+        this Task<Validated<TA, TA>> validatedTask
+    ) => (await validatedTask).Fold(x => x, y => y);
+    
+    
 }

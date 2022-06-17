@@ -70,11 +70,7 @@ public static class EitherExtentions
 
     public static async Task<TUnifiedType> FoldAsync<TUnifiedType>(
         this Task<Either<TUnifiedType, TUnifiedType>> either
-    )
-    {
-        var result = await either;
-        return result.Fold(l => l, r => r);
-    }
+    ) => (await either).Fold(te => te, ta => ta);
 
     public static Option<TRightType> ToOption<TLeftType, TRightType>(
         this Either<TLeftType, TRightType> either
@@ -90,4 +86,25 @@ public static class EitherExtentions
         var result = await either;
         return result.Fold<Option<TRightType>>(_ => new None<TRightType>(), leftSide => new Some<TRightType>(leftSide));
     }
+
+    public static Either<TEB, TA> MapError<TE, TEB, TA>(
+        this Either<TE, TA> either,
+        Func<TE, TEB> errorMapper
+    ) => either
+        .Fold<Either<TEB, TA>>(te => errorMapper(te), ta => ta);
+
+    public static async Task<Either<TEB, TA>> MapErrorAsync<TE, TEB, TA>(
+        this Task<Either<TE, TA>> eitherTask,
+        Func<TE, TEB> errorMapper
+    ) => (await eitherTask).MapError(errorMapper);
+
+    public static async Task<Either<TE, TB>> MapAsync<TE, TA, TB>(
+        this Task<Either<TE, TA>> eitherTask,
+        Func<TA, TB> map
+    ) => (await eitherTask).Map(map);
+
+    public static async Task<Either<TE, TB>> FlatmapAsync<TE, TA, TB>(
+        this Task<Either<TE, TA>> eitherTask,
+        Func<TA, Either<TE, TB>> flatmap
+    ) => (await eitherTask).Flatmap(flatmap);
 }
