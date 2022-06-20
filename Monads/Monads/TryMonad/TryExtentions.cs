@@ -8,6 +8,7 @@ namespace Back.Zone.Monads.TryMonad;
 
 public static class Try
 {
+    [Obsolete("Try is deprecated, use IO instead.")]
     public static Try<TTryTypeA> From<TTryTypeA>(TTryTypeA? value)
     {
         try
@@ -22,6 +23,7 @@ public static class Try
         }
     }
 
+    [Obsolete("Try is deprecated, use IO instead.")]
     public static Try<TTryTypeA> From<TTryTypeA>(Func<TTryTypeA> func)
     {
         try
@@ -35,6 +37,7 @@ public static class Try
         }
     }
 
+    [Obsolete("Try is deprecated, use IO instead.")]
     public static async Task<Try<TTryTypeA>> FromAsync<TTryTypeA>(
         Task<TTryTypeA> task
     )
@@ -50,6 +53,7 @@ public static class Try
         }
     }
 
+    [Obsolete("Try is deprecated, use IO instead.")]
     public static async Task<Try<TTryTypeA>> FromAsync<TTryTypeA>(
         Func<Task<TTryTypeA>> func
     )
@@ -65,6 +69,7 @@ public static class Try
         }
     }
 
+    [Obsolete("Try is deprecated, use IO instead.")]
     public static async Task<Try<TTryTypeB>> MapAsync<TTryTypeA, TTryTypeB>(
         this Task<Try<TTryTypeA>> tryTask,
         Func<TTryTypeA, Task<TTryTypeB>> func
@@ -74,6 +79,7 @@ public static class Try
         return await result.MapAsync(func);
     }
 
+    [Obsolete("Try is deprecated, use IO instead.")]
     public static async Task<Try<TTryTypeB>> FlatmapAsync<TTryTypeA, TTryTypeB>(
         this Task<Try<TTryTypeA>> tryTask,
         Func<TTryTypeA, Task<Try<TTryTypeB>>> func
@@ -83,6 +89,7 @@ public static class Try
         return await result.FlatmapAsync(func);
     }
 
+    [Obsolete("Try is deprecated, use IO instead.")]
     public static async Task<TUnifiedType> FoldAsync<TTryTypeA, TUnifiedType>(
         this Task<Try<TTryTypeA>> tryTask,
         Func<Exception, TUnifiedType> exceptionFunc,
@@ -93,6 +100,7 @@ public static class Try
         return await result.FoldAsync(exceptionFunc, successFunc);
     }
 
+    [Obsolete("Try is deprecated, use IO instead.")]
     public static Either<Exception, TRightType> ToEither<TRightType>(
         this Try<TRightType> tryT
     )
@@ -103,6 +111,7 @@ public static class Try
         );
     }
 
+    [Obsolete("Try is deprecated, use IO instead.")]
     public static Either<TLeftType, TRightTypeA> ToEither<TLeftType, TRightType, TRightTypeA>(
         this Try<TRightType> tryA,
         Func<Exception, TLeftType> left,
@@ -114,6 +123,7 @@ public static class Try
         );
     }
 
+    [Obsolete("Try is deprecated, use IO instead.")]
     public static async Task<Either<Exception, TRightType>> ToEitherAsync<TRightType>(
         this Task<Try<TRightType>> tryTask
     )
@@ -123,6 +133,7 @@ public static class Try
         return result.ToEither();
     }
 
+    [Obsolete("Try is deprecated, use IO instead.")]
     public static Option<TRightType> ToOption<TRightType>(
         this Try<TRightType> tryT
     )
@@ -133,6 +144,7 @@ public static class Try
         );
     }
     
+    [Obsolete("Try is deprecated, use IO instead.")]
     public static async Task<Option<TRightType>> ToOptionAsync<TRightType>(
         this Task<Try<TRightType>> tryTask
     )
@@ -142,6 +154,7 @@ public static class Try
         return result.ToOption();
     }
     
+    [Obsolete("Try is deprecated, use IO instead.")]
     public static Validated<Exception, TRightType> ToValidated<TRightType>(
         this Try<TRightType> tryT
     ) => tryT.Fold<Validated<Exception, TRightType>>(
@@ -149,6 +162,7 @@ public static class Try
         right => new ValidatedSuccess<Exception, TRightType>(right)
     );
     
+    [Obsolete("Try is deprecated, use IO instead.")]
     public static async Task<Validated<Exception, TRightType>> ToValidatedAsync<TRightType>(
         this Task<Try<TRightType>> tryTask
     ) => (await tryTask).ToValidated();
