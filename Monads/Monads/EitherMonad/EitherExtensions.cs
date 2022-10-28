@@ -93,4 +93,11 @@ public static class EitherExtensions
     {
         return await (await eitherTask).MapErrorAsync(leftHandlerAsync);
     }
+
+    public static async Task<Either<TA, TE>> SwapAsync<TE, TA>(
+        this Task<Either<TE, TA>> eitherTask
+    )
+    {
+        return await (await eitherTask).SwapAsync();
+    }
 }
