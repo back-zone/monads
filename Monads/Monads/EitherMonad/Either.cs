@@ -141,4 +141,31 @@ public abstract class Either<TE, TA>
     {
         return await Task.FromResult(Swap());
     }
+
+    public TA GetOrElse(
+        TA elseRightValue
+    )
+    {
+        return IsLeft()
+            ? elseRightValue
+            : RightValue();
+    }
+
+    public async Task<TA> GetOrElseAsync(
+        Task<TA> elseRightValueAsync
+    )
+    {
+        return IsLeft()
+            ? await elseRightValueAsync
+            : RightValue();
+    }
+    
+    public async Task<TA> GetOrElseAsync(
+        TA elseRightValue
+    )
+    {
+        return IsLeft()
+            ? await Task.FromResult(elseRightValue)
+            : RightValue();
+    }
 }

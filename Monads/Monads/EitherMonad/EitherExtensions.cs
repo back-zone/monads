@@ -100,4 +100,20 @@ public static class EitherExtensions
     {
         return await (await eitherTask).SwapAsync();
     }
+
+    public static async Task<TA> GetOrElseAsync<TE, TA>(
+        this Task<Either<TE, TA>> eitherTask,
+        TA elseRightValue
+    )
+    {
+        return await (await eitherTask).GetOrElseAsync(elseRightValue);
+    }
+
+    public static async Task<TA> GetOrElseAsync<TE, TA>(
+        this Task<Either<TE, TA>> eitherTask,
+        Task<TA> elseRightValueAsync
+    )
+    {
+        return await (await eitherTask).GetOrElseAsync(elseRightValueAsync);
+    }
 }
