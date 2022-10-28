@@ -1,71 +1,118 @@
 using System;
 using System.Threading.Tasks;
+using Back.Zone.Monads.IOMonad;
 
 namespace Back.Zone.Monads.EitherMonad;
 
-public readonly struct Either<TLeftType, TRightTypeA>
+public abstract class Either<TE, TA>
 {
-    public readonly TLeftType? Left;
+    public abstract bool IsLeft();
 
-    public readonly TRightTypeA? Right;
+    public abstract TE LeftValue();
 
-    public readonly bool IsLeft;
+    public abstract TA RightValue();
 
-    internal Either(TLeftType left)
+    public static implicit operator Either<TE, TA>(TE left) => new Left<TE, TA>(left);
+
+    public static implicit operator Either<TE, TA>(TA right) => new Right<TE, TA>(right);
+
+    public static Either<Exception, TA> From(Func<TA> builder) =>
+        IO.From(builder).ToEither();
+
+    public static async Task<Either<Exception, TA>> FromAsync(Func<Task<TA>> builderAsync) =>
+        await IO.FromAsync(builderAsync).ToEitherAsync();
+
+    public static Either<Exception, TA> Pure(TA pureValue) =>
+        IO.Pure(pureValue).ToEither();
+
+    public static async Task<Either<Exception, TA>> PureAsync(Task<TA> pureValueAsync) =>
+        await IO.PureAsync(pureValueAsync).ToEitherAsync();
+
+    public Either<TE, TB> Map<TB>(Func<TA, TB> mapper)
     {
-        IsLeft = true;
-        Left = left;
-        Right = default;
+        var left = new Left<TE, TB>(LeftValue());
+        var right = new Right<TE, TB>(mapper(RightValue()));
+
+        return IsLeft() ? left : right;
     }
 
-    internal Either(TRightTypeA right)
+    public async Task<Either<TE, TB>> MapAsync<TB>(Func<TA, Task<TB>> asyncMapper)
     {
-        IsLeft = false;
-        Left = default;
-        Right = right;
+        var left = new Left<TE, TB>(LeftValue());
+        var right = new Right<TE, TB>(await asyncMapper(RightValue()));
+
+        return IsLeft() ? left : right;
     }
 
-    public static implicit operator Either<TLeftType, TRightTypeA>(TLeftType left)
+    public Either<TE, TB> FlatMap<TB>(Func<TA, Either<TE, TB>> flatMapper)
     {
-        return new Either<TLeftType, TRightTypeA>(left);
+        var left = new Left<TE, TB>(LeftValue());
+        var right = flatMapper(RightValue());
+
+        return IsLeft() ? left : right;
     }
 
-    public static implicit operator Either<TLeftType, TRightTypeA>(TRightTypeA right)
+    public async Task<Either<TE, TB>> FlatMapAsync<TB>(Func<TA, Task<Either<TE, TB>>> asyncFlatMapper)
     {
-        return new Either<TLeftType, TRightTypeA>(right);
+        var left = new Left<TE, TB>(LeftValue());
+        var right = await asyncFlatMapper(RightValue());
+
+        return IsLeft() ? left : right;
     }
 
-    public Either<TLeftType, TRightTypeB> Map<TRightTypeB>(
-        Func<TRightTypeA, TRightTypeB> right
-    ) => IsLeft ? Left! : right(Right!);
+    public TB Fold<TB>(Func<TE, TB> leftHandler, Func<TA, TB> rightHandler)
+    {
+        return IsLeft()
+            ? leftHandler(LeftValue())
+            : rightHandler(RightValue());
+    }
 
-    public async Task<Either<TLeftType, TRightTypeB>> MapAsync<TRightTypeB>(
-        Func<TRightTypeA, Task<TRightTypeB>> right
-    ) => IsLeft ? Left! : await right(Right!);
+    public async Task<TB> FoldAsync<TB>(Func<TE, TB> leftHandler, Func<TA, Task<TB>> rightHandlerAsync)
+    {
+        return IsLeft()
+            ? leftHandler(LeftValue())
+            : await rightHandlerAsync(RightValue());
+    }
 
-    public Either<TLeftType, TRightTypeB> Flatmap<TRightTypeB>(
-        Func<TRightTypeA, Either<TLeftType, TRightTypeB>> right
-    ) => IsLeft ? Left! : right(Right!);
+    public async Task<TB> FoldAsync<TB>(Func<TE, Task<TB>> leftHandlerAsync, Func<TA, TB> rightHandler)
+    {
+        return IsLeft()
+            ? await leftHandlerAsync(LeftValue())
+            : rightHandler(RightValue());
+    }
 
-    public async Task<Either<TLeftType, TRightTypeB>> FlatmapAsync<TRightTypeB>(
-        Func<TRightTypeA, Task<Either<TLeftType, TRightTypeB>>> right
-    ) => IsLeft ? Left! : await right(Right!);
+    public async Task<TB> FoldAsync<TB>(Func<TE, Task<TB>> leftHandlerAsync, Func<TA, Task<TB>> rightHandlerAsync)
+    {
+        return IsLeft()
+            ? await leftHandlerAsync(LeftValue())
+            : await rightHandlerAsync(RightValue());
+    }
 
-    public TUnifiedType Fold<TUnifiedType>(Func<TLeftType, TUnifiedType> left, Func<TRightTypeA, TUnifiedType> right) =>
-        IsLeft ? left(Left!) : right(Right!);
+    public TA CheckError(Func<TE, TA> leftHandler)
+    {
+        return IsLeft()
+            ? leftHandler(LeftValue())
+            : RightValue();
+    }
 
-    public async Task<TUnifiedType> FoldAsync<TUnifiedType>(
-        Func<TLeftType, Task<TUnifiedType>> left,
-        Func<TRightTypeA, Task<TUnifiedType>> right
-    ) => IsLeft ? await left(Left!) : await right(Right!);
+    public async Task<TA> CheckErrorAsync(Func<TE, Task<TA>> leftHandlerAsync)
+    {
+        return IsLeft()
+            ? await leftHandlerAsync(LeftValue())
+            : RightValue();
+    }
 
-    public async Task<TUnifiedType> FoldAsync<TUnifiedType>(
-        Func<TLeftType, TUnifiedType> left,
-        Func<TRightTypeA, Task<TUnifiedType>> right
-    ) => IsLeft ? left(Left!) : await right(Right!);
+    public Either<TEE, TA> MapError<TEE>(Func<TE, TEE> leftHandler)
+    {
+        return IsLeft()
+            ? leftHandler(LeftValue())
+            : new Right<TEE, TA>(RightValue());
+    }
 
-    public async Task<TUnifiedType> FoldAsync<TUnifiedType>(
-        Func<TLeftType, Task<TUnifiedType>> left,
-        Func<TRightTypeA, TUnifiedType> right
-    ) => IsLeft ? await left(Left!) : right(Right!);
+    public async Task<Either<TEE, TA>> MapErrorAsync<TEE>(Func<TE, Task<TEE>> leftHandlerAsync)
+    {
+        return IsLeft()
+            ? await leftHandlerAsync(LeftValue())
+            : new Right<TEE, TA>(RightValue());
+    }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Back.Zone.Monads.TryMonad;
 
 namespace Back.Zone.Monads.Validated;
 
@@ -13,6 +14,16 @@ public abstract class Validated<TAFailureType, TASuccessType>
 
     public bool IsFailure() => !IsSuccess();
 
+    public static Validated<Exception, TASuccessType> From<TASuccessType>(TASuccessType value) =>
+        Try.From(value).ToValidated();
+
+    public static Validated<Exception, TASuccessType> From<TASuccessType>(Func<TASuccessType> f) =>
+        Try.From(f).ToValidated();
+
+    public static async Task<Validated<Exception, TASuccessType>> FromAsync<TASuccessType>(
+        Task<TASuccessType> valueTask) =>
+        await Try.FromAsync(valueTask).ToValidatedAsync();
+    
     public static implicit operator Validated<TAFailureType, TASuccessType>(TAFailureType failureType) =>
         new ValidatedFailure<TAFailureType, TASuccessType>(failureType);
 

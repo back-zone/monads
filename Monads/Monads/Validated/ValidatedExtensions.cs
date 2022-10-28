@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Back.Zone.Monads.EitherMonad;
+using Back.Zone.Monads.EitherMonadOld;
 using Back.Zone.Monads.OptionMonad;
 using Back.Zone.Monads.TryMonad;
 
@@ -8,13 +8,6 @@ namespace Back.Zone.Monads.Validated;
 
 public static class ValidatedExtensions
 {
-    public static Validated<Exception, TASuccessType> From<TASuccessType>(TASuccessType value) =>
-        Try.From(value).ToValidated();
-
-    public static async Task<Validated<Exception, TASuccessType>> FromAsync<TASuccessType>(
-        Task<TASuccessType> valueTask) =>
-        await Try.FromAsync(valueTask).ToValidatedAsync();
-
     public static Validated<TAFailureType, TBSuccessType> Map<TAFailureType, TASuccessType, TBSuccessType>(
         this Validated<TAFailureType, TASuccessType> validated,
         Func<TASuccessType, TBSuccessType> func
@@ -82,14 +75,14 @@ public static class ValidatedExtensions
         this Task<Validated<TAFailureType, TASuccessType>> validatedTask
     ) => (await validatedTask).ToOption();
 
-    public static Either<TAFailureType, TASuccessType> ToEither<TAFailureType, TASuccessType>(
+    public static EitherOld<TAFailureType, TASuccessType> ToEither<TAFailureType, TASuccessType>(
         this Validated<TAFailureType, TASuccessType> validated
     ) => validated.Fold(
-        failure => new Either<TAFailureType, TASuccessType>(failure),
-        success => new Either<TAFailureType, TASuccessType>(success)
+        failure => new EitherOld<TAFailureType, TASuccessType>(failure),
+        success => new EitherOld<TAFailureType, TASuccessType>(success)
     );
 
-    public static async Task<Either<TAFailureType, TASuccessType>> ToEitherAsync<TAFailureType, TASuccessType>(
+    public static async Task<EitherOld<TAFailureType, TASuccessType>> ToEitherAsync<TAFailureType, TASuccessType>(
         this Task<Validated<TAFailureType, TASuccessType>> validatedTask
     ) => (await validatedTask).ToEither();
     

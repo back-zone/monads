@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Back.Zone.Monads.EitherMonad;
+using Back.Zone.Monads.EitherMonadOld;
 using Back.Zone.Monads.OptionMonad;
 using Back.Zone.Monads.Validated;
 
@@ -101,30 +101,30 @@ public static class Try
     }
 
     [Obsolete("Try is deprecated, use MIO instead.")]
-    public static Either<Exception, TRightType> ToEither<TRightType>(
+    public static EitherOld<Exception, TRightType> ToEither<TRightType>(
         this Try<TRightType> tryT
     )
     {
         return tryT.Fold(
-            exception => new Either<Exception, TRightType>(exception),
-            right => new Either<Exception, TRightType>(right)
+            exception => new EitherOld<Exception, TRightType>(exception),
+            right => new EitherOld<Exception, TRightType>(right)
         );
     }
 
     [Obsolete("Try is deprecated, use MO instead.")]
-    public static Either<TLeftType, TRightTypeA> ToEither<TLeftType, TRightType, TRightTypeA>(
+    public static EitherOld<TLeftType, TRightTypeA> ToEither<TLeftType, TRightType, TRightTypeA>(
         this Try<TRightType> tryA,
         Func<Exception, TLeftType> left,
         Func<TRightType, TRightTypeA> right)
     {
-        return tryA.Fold<Either<TLeftType, TRightTypeA>>(
+        return tryA.Fold<EitherOld<TLeftType, TRightTypeA>>(
             exception => left(exception),
             other => right(other)
         );
     }
 
     [Obsolete("Try is deprecated, use MIO instead.")]
-    public static async Task<Either<Exception, TRightType>> ToEitherAsync<TRightType>(
+    public static async Task<EitherOld<Exception, TRightType>> ToEitherAsync<TRightType>(
         this Task<Try<TRightType>> tryTask
     )
     {

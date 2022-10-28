@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Back.Zone.Monads.EitherMonad;
+using Back.Zone.Monads.EitherMonadOld;
 using Back.Zone.Monads.OptionMonad;
 using Back.Zone.Monads.Validated;
 
@@ -51,10 +51,10 @@ public static class MIOExtensions
     public static async Task<Option<TA>> ToOptionAsync<TA>(this Task<MIO<TA>> mio) =>
         (await mio).ToOption();
 
-    public static Either<Exception, TA> ToEither<TA>(this MIO<TA> mio) =>
-        mio.HasFailed ? new Either<Exception, TA>(mio.Exception!) : new Either<Exception, TA>(mio.Value!);
+    public static EitherOld<Exception, TA> ToEither<TA>(this MIO<TA> mio) =>
+        mio.HasFailed ? new EitherOld<Exception, TA>(mio.Exception!) : new EitherOld<Exception, TA>(mio.Value!);
 
-    public static async Task<Either<Exception, TA>> ToEitherAsync<TA>(this Task<MIO<TA>> mio) =>
+    public static async Task<EitherOld<Exception, TA>> ToEitherAsync<TA>(this Task<MIO<TA>> mio) =>
         (await mio).ToEither();
 
     public static Validated<Exception, TA> ToValidated<TA>(this MIO<TA> mio) =>
