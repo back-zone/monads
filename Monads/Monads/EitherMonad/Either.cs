@@ -94,14 +94,7 @@ public abstract class Either<TE, TA>
             ? leftHandler(LeftValue())
             : RightValue();
     }
-
-    public async Task<TA> CheckErrorAsync(Func<TE, TA> leftHandlerAsync)
-    {
-        return IsLeft()
-            ? await Task.FromResult(leftHandlerAsync(LeftValue()))
-            : RightValue();
-    }
-
+    
     public async Task<TA> CheckErrorAsync(Func<TE, Task<TA>> leftHandlerAsync)
     {
         return IsLeft()
@@ -157,15 +150,6 @@ public abstract class Either<TE, TA>
     {
         return IsLeft()
             ? await elseRightValueAsync
-            : RightValue();
-    }
-    
-    public async Task<TA> GetOrElseAsync(
-        TA elseRightValue
-    )
-    {
-        return IsLeft()
-            ? await Task.FromResult(elseRightValue)
             : RightValue();
     }
 }

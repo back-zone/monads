@@ -1,4 +1,5 @@
-﻿using Back.Zone.Monads.IOMonad;
+﻿using Back.Zone.Monads.EitherMonad;
+using Back.Zone.Monads.IOMonad;
 
 namespace Monads.Test;
 
@@ -10,6 +11,13 @@ public class Program
 
         var param = Task.FromResult("100");
 
+        Either<string, int> zortingen = new Left<string, int>("2132");
+        
+        var result =
+            await service
+                .ParseToInt(param)
+                .FlatMapAsync(service.AsZor)
+                .ToEitherAsync();
 
         Console.WriteLine(result);
     }
