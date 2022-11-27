@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Back.Zone.Monads.EitherMonad;
+using Back.Zone.Monads.OptionMonad;
 
 namespace Back.Zone.Monads.IOMonad;
 
@@ -127,6 +128,13 @@ public abstract class IO<TA>
             : Left.From<Exception, TA>(Error());
     }
 
+    public Option<TA> ToOption()
+    {
+        return IsSuccess()
+            ? new Some<TA>(Get())
+            : new None<TA>();
+    }
+    
     public static IO<TA> From(Func<TA> builder)
     {
         try
@@ -187,5 +195,12 @@ public static class IO
     )
     {
         return (await ioTask).ToEither();
+    }
+
+    public static async Task<Option<TA>> ToOptionAsync<TA>(
+        this Task<IO<TA>> ioTask
+    )
+    {
+        return (await ioTask).ToOption();
     }
 }

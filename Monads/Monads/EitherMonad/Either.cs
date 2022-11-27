@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Back.Zone.Monads.IOMonad;
+using Back.Zone.Monads.OptionMonad;
 
 namespace Back.Zone.Monads.EitherMonad;
 
@@ -151,5 +152,19 @@ public abstract class Either<TE, TA>
         return IsLeft()
             ? await elseRightValueAsync
             : RightValue();
+    }
+
+    public Option<TA> ToOption()
+    {
+        return IsLeft()
+            ? new None<TA>()
+            : new Some<TA>(RightValue());
+    }
+
+    public IO<TA> ToIO()
+    {
+        return IsLeft()
+            ? new Failure<TA>(new Exception("Left"))
+            : new Success<TA>(RightValue());
     }
 }

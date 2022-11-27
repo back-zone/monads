@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using Back.Zone.Monads.IOMonad;
+using Back.Zone.Monads.OptionMonad;
 
 namespace Back.Zone.Monads.EitherMonad;
 
@@ -44,7 +46,7 @@ public static class EitherExtensions
     {
         return (await eitherTask).Fold(leftHandler, rightHandler);
     }
-    
+
     public static async Task<TB> FoldAsync<TE, TA, TB>(
         this Task<Either<TE, TA>> eitherTask,
         Func<TE, Task<TB>> leftAsyncHandler,
@@ -62,7 +64,7 @@ public static class EitherExtensions
     {
         return await (await eitherTask).FoldAsync(leftHandler, rightAsyncHandler);
     }
-    
+
     public static async Task<TB> FoldAsync<TE, TA, TB>(
         this Task<Either<TE, TA>> eitherTask,
         Func<TE, Task<TB>> leftAsyncHandler,
@@ -123,5 +125,19 @@ public static class EitherExtensions
     )
     {
         return await (await eitherTask).GetOrElseAsync(elseRightValueAsync);
+    }
+
+    public static async Task<Option<TA>> ToOption<TE, TA>(
+        this Task<Either<TE, TA>> eitherTask
+    )
+    {
+        return (await eitherTask).ToOption();
+    }
+
+    public static async Task<IO<TA>> ToIO<TE, TA>(
+        this Task<Either<TE, TA>> eitherTask
+    )
+    {
+        return (await eitherTask).ToIO();
     }
 }
