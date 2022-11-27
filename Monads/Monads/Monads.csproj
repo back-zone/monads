@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <RootNamespace>Back.Zone.Monads</RootNamespace>
         <PackageVersion>0.1.0.0</PackageVersion>
@@ -15,6 +15,7 @@
         <Authors>Murat Yavuzkaplan</Authors>
         <PackageId>Back.Zone.Monads</PackageId>
         <AssemblyName>Back.Zone.Monads</AssemblyName>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
 </Project>
